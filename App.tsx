@@ -4,7 +4,6 @@ import Toolbar from './components/Toolbar';
 import Sidebar from './components/Sidebar';
 import { MapData, ToolMode, POIType, POI, Path, Viewport } from './types';
 import { INITIAL_MAP_NAME, DEFAULT_VIEWPORT, POI_CONFIG } from './constants';
-import { v4 as uuidv4 } from 'uuid'; // Since we can't use uuid pkg, using simple random generator below
 
 // Simple ID generator replacement
 const generateId = () => Math.random().toString(36).substr(2, 9);
