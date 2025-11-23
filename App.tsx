@@ -21,11 +21,17 @@ const App: React.FC = () => {
   const [mode, setMode] = useState<ToolMode>(ToolMode.SELECT);
   const [currentPOIType, setCurrentPOIType] = useState<POIType>(POIType.HOUSE);
   const [selectedPOIId, setSelectedPOIId] = useState<string | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
 
   // Reference for screenshot
   const svgRef = useRef<SVGSVGElement>(null);
 
   // --- Handlers ---
+
+  const showToast = (message: string) => {
+    setNotification(message);
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const handleAddPOI = (x: number, y: number) => {
     const config = POI_CONFIG[currentPOIType];
@@ -86,15 +92,14 @@ const App: React.FC = () => {
   };
 
   const handleDeletePOI = (id: string) => {
-    // Confirm delete (Optional, but good UX)
-    if (!window.confirm("정말 이 건물을 철거하시겠습니까?")) return;
-
+    // Direct delete without confirmation to avoid sandbox issues
     setMapData(prev => ({
         ...prev,
         pois: prev.pois.filter(p => p.id !== id),
         paths: prev.paths.filter(path => path.fromId !== id && path.toId !== id)
     }));
     setSelectedPOIId(null);
+    showToast("건물이 철거되었습니다.");
   };
 
   const handleAddSuggestedPOI = (poiData: { name: string; type: POIType; description: string }) => {
@@ -146,6 +151,7 @@ const App: React.FC = () => {
         link.download = `my-town-${Date.now()}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
+        showToast("지도가 이미지로 저장되었습니다.");
     };
 
     img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
@@ -179,10 +185,11 @@ const App: React.FC = () => {
             });
         } else {
             await navigator.clipboard.writeText(summary);
-            alert("동네 소개가 클립보드에 복사되었습니다! 친구들에게 공유해보세요.");
+            showToast("동네 소개가 클립보드에 복사되었습니다!");
         }
     } catch (err) {
         console.error("Share failed:", err);
+        showToast("공유하기에 실패했습니다.");
     }
   };
 
@@ -198,6 +205,13 @@ const App: React.FC = () => {
   return (
     <div className="w-screen h-screen bg-slate-50 relative overflow-hidden bg-grid-pattern">
       
+      {/* Toast Notification */}
+      {notification && (
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-gray-800/90 text-white px-6 py-3 rounded-full shadow-xl text-sm font-medium z-50 animate-in fade-in slide-in-from-top-4 transition-all">
+          {notification}
+        </div>
+      )}
+
       {/* Map Canvas */}
       <MapCanvas
         ref={svgRef}
