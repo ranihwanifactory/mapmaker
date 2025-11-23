@@ -1,0 +1,5 @@
+{
+  "name": "우리 동네 지도 메이커 (MyTown Maker)",
+  "description": "AI와 함께 만드는 나만의 창의적인 동네 지도 만들기 앱입니다. 건물을 배치하고, 길을 연결하고, Gemini를 통해 멋진 장소 설명을 생성해보세요.",
+  "requestFramePermissions": []
+}
